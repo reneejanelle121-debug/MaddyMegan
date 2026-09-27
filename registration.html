@@ -1,115 +1,573 @@
-<!-- 2. Registration Form -->
-<style>
-  #registerSection {
-    max-width: 400px;
-    margin: 60px auto 0 auto;
-    padding: 40px 32px 32px 32px;
-    background: rgba(40, 0, 0, 0.82);
-    border-radius: 18px;
-    border: 1.2px solid #a92a2a;
-    box-shadow: 0 10px 40px -5px #a92a2a55;
-    color: #ffd7b6;
-    text-align: center;
-    font-family: 'Cormorant Garamond', serif;
-    position: relative;
-    z-index: 1;
-    animation: modalIn 1.3s cubic-bezier(.22,1.15,.5,1.08);
-  }
-  #registerSection h3 {
-    font-size: 2rem;
-    color: #ffd700;
-    margin-bottom: 12px;
-    font-family: 'Cormorant Garamond', serif;
-    letter-spacing: 0.06em;
-  }
-  #registerSection input, #registerSection select {
-    width: 100%;
-    padding: 12px 12px;
-    margin-bottom: 18px;
-    border: 1px solid #b33;
-    border-radius: 8px;
-    background: rgba(24, 0, 0, 0.7);
-    color: #ffd7b6;
-    font-size: 1.06rem;
-    font-family: 'Libre Franklin', sans-serif;
-    transition: border 0.15s;
-  }
-  #registerSection input:focus {
-    border: 1.5px solid #d62727;
-    outline: none;
-  }
-  #registerSection .err {
-    color: #ff3b3b;
-    font-size: 0.96rem;
-    margin-bottom: 10px;
-    min-height: 1.3em;
-  }
-  #registerSection button {
-    padding: 13px 36px;
-    font-size: 1.2rem;
-    font-family: 'Cormorant Garamond', serif;
-    background: linear-gradient(94deg,#d62727 5%,#9d1c2e 85%);
-    color: #fff;
-    border: none;
-    border-radius: 100px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    box-shadow: 0 4px 24px -5px #a92a2a70;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  #registerSection button:disabled {
-    background: #544;
-    color: #bbb;
-    cursor: not-allowed;
-  }
-</style>
-<section id="registerSection">
-  <h3>Private Invitation</h3>
-  <form id="registerForm" autocomplete="off">
-    <div class="err" id="regError"></div>
-    <input type="text" id="name" name="name" maxlength="50" placeholder="Your Name" required>
-    <input type="text" id="nickname" name="nickname" maxlength="10" placeholder="Pick a Nickname" required>
-    <input type="email" id="email" name="email" maxlength="60" placeholder="Email Address" required>
-    <input type="date" id="birthday" name="birthday" required>
-    <button type="submit" id="regSubmit">Request Access</button>
-  </form>
-  <div id="regSuccess" style="display:none;font-size:1.12rem;margin-top:14px;color:#ffd700;">
-    Thank you! Please check your email to confirm registration.
-  </div>
-</section>
-<script>
-  // Nickname validation: ≤10 chars, ≤2 special chars
-  function isNicknameValid(nick) {
-    if (!nick || nick.length > 10) return false;
-    const special = (nick.match(/[^a-zA-Z0-9]/g) || []).length;
-    return special <= 2;
-  }
-  document.getElementById('registerForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const nickname = document.getElementById('nickname').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const birthday = document.getElementById('birthday').value;
-    const err = document.getElementById('regError');
-    err.textContent = '';
-    if (!isNicknameValid(nickname)) {
-      err.textContent = 'Nickname: Max 10 chars, 2 special allowed.';
-      return;
-    }
-    // Simple birthday/age check
-    const age = new Date().getFullYear() - new Date(birthday).getFullYear();
-    if (age < 21) {
-      err.textContent = 'Must be 21+ to register.';
-      return;
-    }
-    // Simulate backend save & email (replace with AJAX as needed)
-    document.getElementById('regSubmit').disabled = true;
-    setTimeout(function(){
-      document.getElementById('registerForm').style.display = 'none';
-      document.getElementById('regSuccess').style.display = 'block';
-      // Here, add AJAX to your API/mail system!
-    }, 800);
-  }
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Private Invitation</title>
+
+  <!-- Optional Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Libre+Franklin:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          #350000 0%,
+          #150000 35%,
+          #050000 70%,
+          #000000 100%
+        );
+
+      color: #ffd7b6;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      padding: 30px 16px;
+
+      font-family: "Libre Franklin", sans-serif;
+    }
+
+    #registerSection {
+      width: 100%;
+      max-width: 430px;
+
+      padding: 42px 32px 34px;
+
+      background: rgba(40, 0, 0, 0.88);
+
+      border-radius: 18px;
+      border: 1px solid #a92a2a;
+
+      box-shadow:
+        0 10px 40px -5px rgba(169, 42, 42, 0.4),
+        inset 0 0 30px rgba(255, 0, 0, 0.03);
+
+      text-align: center;
+
+      animation: modalIn 0.8s cubic-bezier(.22, 1.15, .5, 1.08);
+    }
+
+    #registerSection h1 {
+      margin: 0 0 4px;
+
+      color: #ffd700;
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+
+      letter-spacing: 0.05em;
+    }
+
+    #registerSection .subtitle {
+      margin: 0 0 28px;
+
+      color: #cda98e;
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.15rem;
+    }
+
+    .field {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .field label {
+      display: block;
+
+      margin: 0 0 7px 3px;
+
+      color: #e7c1a4;
+
+      font-size: 0.88rem;
+    }
+
+    #registerSection input {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      border: 1px solid #833;
+      border-radius: 8px;
+
+      background: rgba(24, 0, 0, 0.85);
+      color: #ffd7b6;
+
+      font-size: 1rem;
+      font-family: "Libre Franklin", sans-serif;
+
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        background 0.2s;
+    }
+
+    #registerSection input::placeholder {
+      color: #9b7771;
+    }
+
+    #registerSection input:focus {
+      outline: none;
+
+      border-color: #d62727;
+
+      box-shadow: 0 0 0 3px rgba(214, 39, 39, 0.15);
+
+      background: rgba(35, 0, 0, 0.95);
+    }
+
+    #registerSection input[type="date"] {
+      color-scheme: dark;
+    }
+
+    #regError {
+      display: none;
+
+      margin-bottom: 18px;
+      padding: 10px 12px;
+
+      border: 1px solid rgba(255, 59, 59, 0.35);
+      border-radius: 7px;
+
+      background: rgba(255, 59, 59, 0.08);
+
+      color: #ff7676;
+
+      font-size: 0.92rem;
+      line-height: 1.4;
+
+      text-align: left;
+    }
+
+    #regSubmit {
+      width: 100%;
+
+      margin-top: 7px;
+      padding: 14px 24px;
+
+      border: none;
+      border-radius: 100px;
+
+      background: linear-gradient(
+        94deg,
+        #d62727 5%,
+        #9d1c2e 85%
+      );
+
+      color: #fff;
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+
+      letter-spacing: 0.07em;
+
+      box-shadow: 0 4px 24px -5px rgba(169, 42, 42, 0.7);
+
+      cursor: pointer;
+
+      transition:
+        transform 0.15s,
+        box-shadow 0.2s,
+        opacity 0.2s;
+    }
+
+    #regSubmit:hover:not(:disabled) {
+      transform: translateY(-1px);
+
+      box-shadow:
+        0 6px 30px -5px rgba(214, 39, 39, 0.8);
+    }
+
+    #regSubmit:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    #regSubmit:disabled {
+      background: #544;
+
+      color: #bbb;
+
+      cursor: not-allowed;
+
+      opacity: 0.8;
+    }
+
+    #regSuccess {
+      display: none;
+
+      padding: 22px 10px 6px;
+
+      color: #ffd700;
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.3rem;
+      line-height: 1.5;
+    }
+
+    #regSuccess .check {
+      display: block;
+
+      margin-bottom: 12px;
+
+      color: #56d364;
+
+      font-size: 2.7rem;
+    }
+
+    .note {
+      margin-top: 18px;
+
+      color: #886c65;
+
+      font-size: 0.75rem;
+      line-height: 1.5;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(22px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 500px) {
+      #registerSection {
+        padding: 34px 22px 28px;
+      }
+
+      #registerSection h1 {
+        font-size: 2.1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section id="registerSection">
+
+    <h1>Private Invitation</h1>
+
+    <p class="subtitle">
+      Request access below.
+    </p>
+
+    <form id="registerForm" autocomplete="off">
+
+      <div
+        id="regError"
+        role="alert"
+        aria-live="polite"
+      ></div>
+
+      <div class="field">
+        <label for="name">Name</label>
+
+        <input
+          type="text"
+          id="name"
+          name="name"
+          maxlength="50"
+          placeholder="Your Name"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="nickname">Nickname</label>
+
+        <input
+          type="text"
+          id="nickname"
+          name="nickname"
+          maxlength="10"
+          placeholder="Pick a Nickname"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+
+        <input
+          type="email"
+          id="email"
+          name="email"
+          maxlength="60"
+          placeholder="you@example.com"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="birthday">Birthday</label>
+
+        <input
+          type="date"
+          id="birthday"
+          name="birthday"
+          required
+        >
+      </div>
+
+      <button
+        type="submit"
+        id="regSubmit"
+      >
+        Request Access
+      </button>
+
+      <p class="note">
+        Registration is limited to guests age 21 and older.
+      </p>
+
+    </form>
+
+    <div
+      id="regSuccess"
+      aria-live="polite"
+    >
+      <span class="check">✓</span>
+
+      Thank you.<br>
+
+      Please check your email to confirm your registration.
+    </div>
+
+  </section>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const errorBox = document.getElementById("regError");
+    const submitButton = document.getElementById("regSubmit");
+    const successBox = document.getElementById("regSuccess");
+    const birthdayInput = document.getElementById("birthday");
+
+    /*
+      Prevent future birthdays from being selected.
+      A shockingly necessary precaution for humanity.
+    */
+    const today = new Date();
+
+    const todayString =
+      today.getFullYear() +
+      "-" +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(today.getDate()).padStart(2, "0");
+
+    birthdayInput.max = todayString;
+
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+    }
+
+
+    function clearError() {
+      errorBox.textContent = "";
+      errorBox.style.display = "none";
+    }
+
+
+    function isNicknameValid(nickname) {
+      if (!nickname) {
+        return false;
+      }
+
+      if (nickname.length > 10) {
+        return false;
+      }
+
+      const specialCharacters =
+        nickname.match(/[^a-zA-Z0-9]/g) || [];
+
+      return specialCharacters.length <= 2;
+    }
+
+
+    function calculateAge(dateString) {
+      const birthDate = new Date(
+        dateString + "T00:00:00"
+      );
+
+      const currentDate = new Date();
+
+      let age =
+        currentDate.getFullYear() -
+        birthDate.getFullYear();
+
+      const monthDifference =
+        currentDate.getMonth() -
+        birthDate.getMonth();
+
+      /*
+        Subtract one year when this year's birthday
+        hasn't happened yet.
+      */
+      if (
+        monthDifference < 0 ||
+        (
+          monthDifference === 0 &&
+          currentDate.getDate() < birthDate.getDate()
+        )
+      ) {
+        age--;
+      }
+
+      return age;
+    }
+
+
+    form.addEventListener("submit", async function (event) {
+
+      event.preventDefault();
+
+      clearError();
+
+      const name =
+        document.getElementById("name").value.trim();
+
+      const nickname =
+        document.getElementById("nickname").value.trim();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const birthday =
+        birthdayInput.value;
+
+
+      /*
+        Let the browser catch normal HTML validation
+        such as malformed emails and missing fields.
+      */
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+
+      if (name.length < 2) {
+        showError(
+          "Please enter your full name."
+        );
+
+        return;
+      }
+
+
+      if (!isNicknameValid(nickname)) {
+        showError(
+          "Nickname must be 10 characters or fewer and may contain no more than 2 special characters."
+        );
+
+        return;
+      }
+
+
+      if (!birthday) {
+        showError(
+          "Please enter your birthday."
+        );
+
+        return;
+      }
+
+
+      const birthDate =
+        new Date(birthday + "T00:00:00");
+
+
+      if (
+        Number.isNaN(birthDate.getTime()) ||
+        birthDate > new Date()
+      ) {
+        showError(
+          "Please enter a valid birthday."
+        );
+
+        return;
+      }
+
+
+      const age = calculateAge(birthday);
+
+
+      if (age < 21) {
+        showError(
+          "You must be at least 21 years old to register."
+        );
+
+        return;
+      }
+
+
+      /*
+        Lock button while registration is being processed.
+      */
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+
+
+      const registrationData = {
+        name,
+        nickname,
+        email,
+        birthday
+      };
+
+
+      console.log(
+        "Registration data:",
+        registrationData
+      );
+
+
+      /*
+        TEMPORARY DEMO
+
+        Replace this with a real fetch() request
+        to your backend.
+      */
+      setTimeout(function () {
+
+        form.style.display = "none";
+
+        successBox.style.display = "block";
+
+      }, 800);
+
+    });
+  </script>
+
+</body>
+</html>
